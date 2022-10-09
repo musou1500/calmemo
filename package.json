@@ -41,5 +41,10 @@
       "last 1 safari version"
     ]
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.2.4",
+  "devDependencies": {
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "eslint": "^8.25.0",
+    "eslint-config-react-app": "^7.0.1"
+  }
 }

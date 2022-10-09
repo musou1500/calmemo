@@ -14,6 +14,27 @@
 .header {
   padding: 8px;
   line-height: 1;
+  display: flex;
+}
+
+.changeMonthButton {
+  padding: 0 16px;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.changeMonthButton:hover {
+  background-color: #efefef;
+}
+
+.currentMonth {
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: solid 1px #e0e0e0;
+  padding: 8px;
+  margin: 0 8px;
 }
 
 .calenderArea {

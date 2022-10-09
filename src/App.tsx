@@ -4,6 +4,8 @@ import {
   differenceInDays,
   startOfDay,
   format,
+  addMonths,
+  subMonths,
 } from "date-fns";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "./App.module.css";
@@ -65,8 +67,12 @@ const getMemoKey = (date: Date) => {
   return format(date, "yyyy-MM-dd");
 };
 
+const formatMonthText = (date: Date) => {
+  return format(date, "yyyy-MM");
+};
+
 function App() {
-  const today = startOfDay(new Date());
+  const [today, setToday] = useState(startOfDay(new Date()));
   const start = startOfCalenderMonth(today);
   const end = endOfCalenderMonth(today);
   const dows = ["月", "火", "水", "木", "金", "土", "日"];
@@ -81,6 +87,27 @@ function App() {
     [memo]
   );
 
+  const onChangeMonth: React.ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      if (e.target.valueAsDate) {
+        setToday(e.target.valueAsDate);
+      }
+    },
+    []
+  );
+
+  const onNextMonth = useCallback(() => {
+    setToday((today) => addMonths(today, 1));
+  }, []);
+
+  const onPreviousMonth = useCallback(() => {
+    setToday((today) => subMonths(today, 1));
+  }, []);
+
+  const onGotoToday = useCallback(() => {
+    setToday(() => startOfMonth(new Date()));
+  }, []);
+
   useEffect(() => {
     const memo = localStorage.getItem("memo");
     if (memo) {
@@ -91,9 +118,22 @@ function App() {
   return (
     <div className={styles.app}>
       <header className={styles.header}>
-        <h1 className={styles.currentMonth}>
-          {today.getFullYear()}年{today.getMonth() + 1}月
-        </h1>
+        <button className={styles.changeMonthButton} onClick={onPreviousMonth}>
+          &lt;
+        </button>
+        <input
+          className={styles.currentMonth}
+          type="month"
+          value={formatMonthText(today)}
+          onChange={onChangeMonth}
+        />
+        <button className={styles.changeMonthButton} onClick={onNextMonth}>
+          &gt;
+        </button>
+
+        <button className={styles.changeMonthButton} onClick={onGotoToday}>
+          今日
+        </button>
       </header>
       <main className={styles.calenderArea}>
         <table className={styles.calender}>

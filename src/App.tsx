@@ -6,8 +6,13 @@ import {
   format,
   addMonths,
   subMonths,
+  isSameDay,
+  addWeeks,
+  subWeeks,
+  addDays,
+  subDays,
 } from "date-fns";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./App.module.css";
 
 const startOfCalenderMonth = (date: Date) => {
@@ -31,11 +36,21 @@ const CalenderCol = ({
   today,
   memo,
   onChangeMemo,
+  onNextDay,
+  onNextWeek,
+  onPrevDay,
+  onPrevWeek,
+  isActive,
 }: {
   date: Date;
   today: Date;
   memo: string;
   onChangeMemo: (date: Date, memo: string) => void;
+  onNextDay: (date: Date) => void;
+  onPrevDay: (date: Date) => void;
+  onNextWeek: (date: Date) => void;
+  onPrevWeek: (date: Date) => void;
+  isActive: boolean;
 }) => {
   const isCurrentMonth = date.getMonth() === today.getMonth();
   const onChange = useCallback(
@@ -44,6 +59,42 @@ const CalenderCol = ({
     },
     [date, onChangeMemo]
   );
+
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.ctrlKey) {
+        switch (e.key) {
+          case "ArrowDown": {
+            onNextWeek(date);
+            break;
+          }
+          case "ArrowUp": {
+            onPrevWeek(date);
+            break;
+          }
+          case "ArrowRight": {
+            onNextDay(date);
+            break;
+          }
+          case "ArrowLeft": {
+            onPrevDay(date);
+            break;
+          }
+        }
+        return;
+      }
+    },
+    [date, onNextDay, onNextWeek, onPrevDay, onPrevWeek]
+  );
+
+  useEffect(() => {
+    if (isActive) {
+      ref.current?.focus();
+    }
+  }, [isActive]);
+
   return (
     <td
       className={[
@@ -57,6 +108,8 @@ const CalenderCol = ({
           className={styles.colTextarea}
           value={memo}
           onChange={onChange}
+          onKeyDown={onKeyDown}
+          ref={ref}
         />
       </div>
     </td>
@@ -73,6 +126,7 @@ const formatMonthText = (date: Date) => {
 
 function App() {
   const [today, setToday] = useState(startOfDay(new Date()));
+  const [focusDate, setFocusDate] = useState(startOfDay(new Date()));
   const start = startOfCalenderMonth(today);
   const end = endOfCalenderMonth(today);
   const dows = ["月", "火", "水", "木", "金", "土", "日"];
@@ -110,6 +164,30 @@ function App() {
 
   const onPrint = useCallback(() => {
     window.print();
+  }, []);
+
+  const onNextWeek = useCallback((date: Date) => {
+    const newDate = addWeeks(date, 1);
+    setFocusDate(newDate);
+    setToday(startOfMonth(newDate));
+  }, []);
+
+  const onPrevWeek = useCallback((date: Date) => {
+    const newDate = subWeeks(date, 1);
+    setFocusDate(newDate);
+    setToday(startOfMonth(newDate));
+  }, []);
+
+  const onNextDay = useCallback((date: Date) => {
+    const newDate = addDays(date, 1);
+    setFocusDate(newDate);
+    setToday(startOfMonth(newDate));
+  }, []);
+
+  const onPrevDay = useCallback((date: Date) => {
+    const newDate = subDays(date, 1);
+    setFocusDate(newDate);
+    setToday(startOfMonth(newDate));
   }, []);
 
   useEffect(() => {
@@ -165,6 +243,11 @@ function App() {
                       key={d.getTime()}
                       onChangeMemo={onChangeMemo}
                       memo={memo[getMemoKey(d)] || ""}
+                      isActive={isSameDay(d, focusDate)}
+                      onNextWeek={onNextWeek}
+                      onPrevWeek={onPrevWeek}
+                      onNextDay={onNextDay}
+                      onPrevDay={onPrevDay}
                     />
                   );
                 })}

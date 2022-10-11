@@ -108,6 +108,10 @@ function App() {
     setToday(() => startOfMonth(new Date()));
   }, []);
 
+  const onPrint = useCallback(() => {
+    window.print();
+  }, []);
+
   useEffect(() => {
     const memo = localStorage.getItem("memo");
     if (memo) {
@@ -133,6 +137,10 @@ function App() {
 
         <button className={styles.changeMonthButton} onClick={onGotoToday}>
           今日
+        </button>
+
+        <button className={styles.printButton} onClick={onPrint}>
+          印刷
         </button>
       </header>
       <main className={styles.calenderArea}>

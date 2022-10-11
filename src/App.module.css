@@ -37,6 +37,24 @@
   margin: 0 8px;
 }
 
+@media print {
+  .printButton {
+    display: none;
+  }
+}
+
+.printButton {
+  padding: 0 16px;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.printButton:hover {
+  background-color: #efefef;
+}
+
 .calenderArea {
   flex: 1;
 }
